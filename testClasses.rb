@@ -25,14 +25,15 @@ class TestClasses < Page
    clickOnNxtBtn
       
    chooseDateOfService("Monday, April 27, 2020")
-      
+    
    clickOnNxtBtn
    
    chooseTimeOfService("03:00")
     
    clickOnNxtBtn
    
-    insertEmail("testdsdds12@gmail.com")
+    insertEmail("test")
+    
     
 #    clickOnNxtBtn()
 #    

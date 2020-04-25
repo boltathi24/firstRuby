@@ -42,6 +42,8 @@ class Page < Util
     end
    
   def chooseDateOfService(date)
+      date=getDateAfterAddingDays(2)
+      selectMonth(getMonthAfterAddingDays(2))
       clickOnElement(customFindElement(:xpath,"//button[@aria-label='#{date}']"))
       
     end
@@ -65,9 +67,19 @@ class Page < Util
       
     end
     
+    def getCurrentMonthCalendar
+      return getTextValue(customFindElement(:xpath,"//div[contains(@class,'CalendarMonth CalendarMonth') and @data-visible='true']"))
+    end
+    
+    def selectMonth(month)
+     while !month.casecmp(getCurrentMonthCalendar) do
+      clickOnElement(customFindElement(:xpath,"//div[contains(@class,'commonInputContaine')]//i[contains(@class,'nextIcon')]"))
+     end
+    end
 
     def insertEmail(email)
-      insertValue(customFindElement(:xpath,"//input[@data-test='step_email']"),email)
+      time=getCurrentTime
+      insertValue(customFindElement(:xpath,"//input[@data-test='step_email']"),email+time+"@gmail.com")
     end
     
   def insertFullName(name)
