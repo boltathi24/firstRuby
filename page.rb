@@ -41,12 +41,14 @@ class Page < Util
 #      customFindElement(:xpath,"//div[text()='On a specific date']//ancestor::label").click
     end
    
-  def chooseDateOfService(date)
-      date=getDateAfterAddingDays(2)
-      selectMonth(getMonthAfterAddingDays(2))
+  def chooseDateOfService(dayToAdd)   
+    date=getDateAfterAddingDays(dayToAdd)
+      selectMonth(getMonthAfterAddingDays(dayToAdd))
       clickOnElement(customFindElement(:xpath,"//button[@aria-label='#{date}']"))
       
     end
+    
+
     
   
   def clickOnNxtBtn
@@ -54,8 +56,13 @@ class Page < Util
      
     end
     
-    def waitForVerifyPhoneButton
+    def verifyPhoneButtonPresence
       waitUntil(:xpath,"//button[contains(@class,'successButton')]")
+      
+      puts isElementDisplayed(:id ,"PHONE_NUMBER")
+      puts getTextValue(customFindElement(:xpath,"//button[contains(@class,'successButton')]"))
+#      assert isElementDisplayed(:id ,"PHONE_NUMBER")
+#      assert getTextValue(customFindElement(:xpath,"//button[contains(@class,'successButton')]")).include?("Verify")
     end
     
     def chooseTimeOfService(time)
@@ -63,18 +70,102 @@ class Page < Util
     end
     
     def selectCheckBoxValue(val)
-      clickOnElement(customFindElement(:xpath,"//div[contains(@class,'styles__checkBox')]//parent::*//following-sibling::div[text()='#{val}']"))
+      clickOnElement(customFindElement(:xpath,"//div[contains(@class,'styles__checkBox')]//parent::*//following-sibling::div[contains(text(),'#{val}')]"))
       
     end
     
-    def getCurrentMonthCalendar
-      return getTextValue(customFindElement(:xpath,"//div[contains(@class,'CalendarMonth CalendarMonth') and @data-visible='true']"))
+    def getQstn
+      
+      
+      return getTextValue(customFindElement(:xpath,"//div[contains(@class,'popup__content')]//div[contains(@class,'commonFormTitle') or contains(@class,'titleBase')]"))
     end
     
-    def selectMonth(month)
-     while !month.casecmp(getCurrentMonthCalendar) do
-      clickOnElement(customFindElement(:xpath,"//div[contains(@class,'commonInputContaine')]//i[contains(@class,'nextIcon')]"))
+    def isElementDisplayed(locator,value)
+      
+      if(customFindElements(locator,value).size>0 && customFindElement(locator,value).displayed?)
+        return true
+      else
+        return false 
+      end
+    end
+    
+    
+    def navigateUserChoice(hash)
+      waitForProgressBar
+      while isElementDisplayed(:xpath,"//div[contains(@class,'popup__content')]//div[contains(@class,'commonFormTitle') or contains(@class,'titleBase')]")
+        
+        if isElementDisplayed(:xpath,"//button[contains(@class,'successButton')]")
+                verifyPhoneButtonPresence
+                break
+         end
+              
+        qstn=getQstn
+        val =hash[qstn]
+        
+        
+        
+        if hash.key?  qstn 
+          if qstn.include?("Plumber needs to know?")
+            insertInfoForPlumber(val)
+            clearInfoForPlumber
+            
+            elsif qstn.include?("When do you require plumbing?")
+            chooseWhenToComeForService(val)
+            
+            elsif qstn.include?("On what date?")
+            chooseDateOfService(val) 
+            
+            elsif qstn.include?("Where would you like us to notify you about new quotes received on your request?")
+            insertEmail(val) 
+            
+            elsif qstn.include?("Please introduce yourself")
+            insertFullName(val)                    
+                       
+            elsif qstn.include?("What time do you need the Plumber?")
+             chooseTimeOfService(val)
+                                           
+            else
+            selectCheckBoxValue(val)
+          end
+#          
+       else 
+          if  isElementDisplayed(:xpath,"//div[contains(@class,'styles__checkBox')]//parent::*//following-sibling::div")
+          selectCheckBoxValue("")
+          end
+        end
+      
+      
+     
+      
+      clickOnNxtBtn()
+      waitForProgressBar()
+      
+      end
+    end
+        
+        
+    
+     def waitForProgressBar
+       waitUntil(:xpath,"//div[contains(@class,'topBase')]")
+     
      end
+     
+     
+    
+    
+    def getCurrentMonthCalendar
+      return getTextValue(customFindElement(:xpath,"//div[contains(@class,'CalendarMonth CalendarMonth') and @data-visible='true']//div[contains(@class,'CalendarMonth_caption')]"))
+    end
+    
+  
+    
+    def selectMonth(month)     
+         
+      while(!(month.casecmp(getCurrentMonthCalendar)==0))
+        
+       clickOnElement(customFindElement(:xpath,"//div[contains(@class,'commonInputContaine')]//i[contains(@class,'nextIcon')]"))
+     end
+      
     end
 
     def insertEmail(email)

@@ -8,6 +8,11 @@ class Util < BaseClass
         return  $driver.find_element(locator,value)
       end
       
+  def customFindElements(locator,value)
+         
+         return  $driver.find_elements(locator,value)
+       end
+      
       def insertValue(element ,value)
         element.send_keys(value)
       end
@@ -49,7 +54,7 @@ def getCurrentTime
     
     t=Time.now
     d=Date.parse(t.to_s)
-    d=d+3
+    d=d+numberOfDays
     time=Time.parse(d.to_s)
     return time.strftime("%A, %B %-d, %Y")
   end
@@ -57,9 +62,9 @@ def getCurrentTime
 def getMonthAfterAddingDays(numberOfDays)
   t=Time.now
       d=Date.parse(t.to_s)
-      d=d+3
+      d=d+numberOfDays
     time=  Time.parse(d.to_s)
-    return time.strftime("%B")
+    return time.strftime("%B %Y")
   end
     
 end

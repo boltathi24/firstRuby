@@ -1,3 +1,4 @@
+require 'test/unit'
 class BaseClass
   
   @driver;
