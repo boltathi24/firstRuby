@@ -20,7 +20,7 @@ class TestClasses < Page
     userChoice["When do you require plumbing?"] = "On a specific date"
     userChoice["On what date?"] = 2
     userChoice["What time do you need the Plumber?"] = "06:00"
-    userChoice["Where would you like us to notify you about new quotes received on your request?"] = "test-email"
+    userChoice["Where would you like us to notify you about new quotes received on your request?"] = "testemail"
     userChoice["Please introduce yourself"] = "test user"
     navigateUserChoice(userChoice)
     

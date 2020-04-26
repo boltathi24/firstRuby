@@ -30,9 +30,14 @@ class Util < BaseClass
           end
     
     def waitUntil(locator,value)
-       Selenium::WebDriver::Wait.new(:timeout => 10).until{$driver.find_element(locator,value).displayed?}
+       Selenium::WebDriver::Wait.new(:timeout => 20).until{$driver.find_element(locator,value).displayed?}
          
        end
+       
+#def waitUntilClickable(locator,value)
+#       Selenium::WebDriver::Wait.new(:timeout => 10).until{$driver.find_element(locator,value).click}
+#         
+#       end
        
 def navigateUrl(url)
   $driver.get(url)

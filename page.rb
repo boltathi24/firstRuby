@@ -52,17 +52,15 @@ class Page < Util
     
   
   def clickOnNxtBtn
-    clickOnElement(customFindElement(:xpath,"//button[@data-test='next_button']"))
+    clickOnElement(customFindElement(:xpath,"//button[@data-test='next_button' and not(contains(@class,'is-working'))]"))
+      
      
     end
     
     def verifyPhoneButtonPresence
-      waitUntil(:xpath,"//button[contains(@class,'successButton')]")
-      
-      puts isElementDisplayed(:id ,"PHONE_NUMBER")
-      puts getTextValue(customFindElement(:xpath,"//button[contains(@class,'successButton')]"))
-#      assert isElementDisplayed(:id ,"PHONE_NUMBER")
-#      assert getTextValue(customFindElement(:xpath,"//button[contains(@class,'successButton')]")).include?("Verify")
+      waitUntil(:xpath ,"//button[@data-test='verify_button']")
+      raise "Phone number Not displayed" unless isElementDisplayed(:id ,"PHONE_NUMBER")
+      raise "Text of Button in Phone number Field is incorrect" unless  getTextValue(customFindElement(:xpath,"//button[@data-test='verify_button']")).include?("Verify")
     end
     
     def chooseTimeOfService(time)
@@ -76,7 +74,7 @@ class Page < Util
     
     def getQstn
       
-      
+      waitForProgressBar
       return getTextValue(customFindElement(:xpath,"//div[contains(@class,'popup__content')]//div[contains(@class,'commonFormTitle') or contains(@class,'titleBase')]"))
     end
     
@@ -89,20 +87,42 @@ class Page < Util
       end
     end
     
+    def waitForQstnToChange(prevQstn)
+      i=1
+             while(prevQstn.include?getQstn)
+             waitForProgressBar      
+             sleep(1)
+             i=i+1
+             if(i>30)         
+                 break
+             end
+             end
+    end
+    
     
     def navigateUserChoice(hash)
       waitForProgressBar
+      prevQstn="*****************"
       while isElementDisplayed(:xpath,"//div[contains(@class,'popup__content')]//div[contains(@class,'commonFormTitle') or contains(@class,'titleBase')]")
         
-        if isElementDisplayed(:xpath,"//button[contains(@class,'successButton')]")
-                verifyPhoneButtonPresence
-                break
-         end
-              
+        waitForQstnToChange(prevQstn)
+        prevQstn=getQstn
         qstn=getQstn
         val =hash[qstn]
         
+#      if qstn.include?("Get responses faster with SMS notifications.")
+#                    
+#                      verifyPhoneButtonPresence 
+#                      break
+#               end
         
+      if isElementDisplayed(:xpath,"//button[@data-test='verify_button']")
+                         
+                           verifyPhoneButtonPresence 
+                           break
+                    end
+        
+      
         
         if hash.key?  qstn 
           if qstn.include?("Plumber needs to know?")
